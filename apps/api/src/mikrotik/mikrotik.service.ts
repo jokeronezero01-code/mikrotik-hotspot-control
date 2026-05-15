@@ -5,24 +5,26 @@ import { RouterOSClient } from 'routeros-client';
 export class MikrotikService {
   private readonly logger = new Logger(MikrotikService.name);
 
-  // ฟังก์ชันสำหรับทดสอบเชื่อมต่อและดึงข้อมูลพื้นฐาน
   async getSystemResource(host: string, user: string, pass: string) {
     const client = new RouterOSClient({
-      host: host,
-      user: user,
+      host,
+      user,
       password: pass,
-      port: 8728, // พอร์ตมาตรฐาน Mikrotik API
-      timeout: 5,  // รอสาย 5 วินาที
+      port: 8728,
+      timeout: 5,
     });
 
     try {
+      // 1. สร้างการเชื่อมต่อ
       const api = await client.connect();
       this.logger.log(`Connected to Mikrotik: ${host}`);
 
-      // ส่งคำสั่งไปดึง /system/resource
-      const resources = await api.write('/system/resource/print');
+      // 2. ใช้เมนู menu เพื่อเข้าถึงคำสั่ง (แก้ไขตรงนี้)
+      const resources = await api.menu('/system/resource').print();
       
-      await api.close(); // ปิดการเชื่อมต่อทุกครั้งหลังใช้เสร็จ
+      // 3. ปิดการเชื่อมต่อผ่านตัว client (แก้ไขตรงนี้)
+      await client.close(); 
+      
       return resources[0];
     } catch (error) {
       this.logger.error(`Connection failed to ${host}: ${error.message}`);

@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "routeros-client": "^1.1.1"
+  }
+}
