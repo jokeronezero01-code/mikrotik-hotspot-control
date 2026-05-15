@@ -15,4 +15,14 @@ export class MikrotikController {
   ) {
     return await this.mikrotikService.getSystemResource(host, user, pass);
   }
+
+  @Get('users')
+  async getUsers(
+    @Query('host') host: string,
+    @Query('user') user: string,
+    @Query('pass') pass: string,
+  ) {
+    return this.mikrotikService.getHotspotUsers(host, user, pass);
+  }
 }
+

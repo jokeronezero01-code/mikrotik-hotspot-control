@@ -31,4 +31,18 @@ export class MikrotikService {
       throw error;
     }
   }
+
+  // ฟังก์ชันดึงรายชื่อ User Hotspot ทั้งหมด
+  async getHotspotUsers(host: string, user: string, pass: string) {
+    const client = new RouterOSClient({ host, user, password: pass });
+    try {
+      const api = await client.connect();
+      // เข้าไปที่เมนู /ip/hotspot/user
+      const users = await api.menu('/ip/hotspot/user').print();
+      await client.close();
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
