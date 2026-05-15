@@ -32,6 +32,7 @@ model Router {
   port      Int      @default(8728) // พอร์ตมาตรฐานสำหรับ API 
   apiUser   String   // Username สำหรับเข้าใช้งาน API Mikrotik [cite: 418, 734]
   apiPass   String   // Password สำหรับเข้าใช้งาน API Mikrotik [cite: 418, 734]
+  status    String   @default("ACTIVE")
   branch    String?  // สาขาหรือสถานที่ติดตั้ง [cite: 418]
   isActive  Boolean  @default(true) // สำหรับเปิด-ปิดการเชื่อมต่อ [cite: 736]
   admins    User[]   // รายชื่อ Admin ที่มีสิทธิ์ดูแล Router นี้ [cite: 734, 736]

@@ -1,11 +1,11 @@
-import { defineConfig } from '@prisma/config';
-import * as dotenv from 'dotenv';
+import { defineConfig } from '@prisma/config'
+import * as dotenv from 'dotenv'
 
-// โหลดค่าจากไฟล์ .env ในโฟลเดอร์เดียวกัน
-dotenv.config();
+dotenv.config()
 
 export default defineConfig({
+  schema: './prisma/schema.prisma',
   datasource: {
-    url: process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL ?? '',
   },
-});
+})
