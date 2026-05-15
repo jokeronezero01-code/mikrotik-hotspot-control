@@ -1,0 +1,50 @@
+// กำหนดแหล่งข้อมูลและเครื่องมือสร้าง Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 1. ส่วนกำหนดสิทธิ์ผู้ใช้งาน (Roles) [cite: 417, 734]
+enum Role {
+  SUPER_ADMIN  // จัดการได้ทุกอย่าง รวมถึง Admin และ Router ทั้งหมด
+  ADMIN        // จัดการเฉพาะ Router ที่ได้รับสิทธิ์
+  VIEWER       // ดูข้อมูลได้อย่างเดียว (Optional)
+}
+
+// 2. ตารางผู้ใช้งาน (Admin/Super Admin) [cite: 385, 734]
+model User {
+  id        String   @id @default(uuid()) // ใช้ UUID เพื่อความปลอดภัยในระบบ SaaS [cite: 736]
+  username  String   @unique
+  password  String   // เก็บแบบ Hash Password [cite: 452, 662]
+  role      Role     @default(ADMIN)
+  routers   Router[] // ความสัมพันธ์ Many-to-Many: 1 คนดูแลได้หลาย Router [cite: 734, 736]
+  createdAt DateTime @default(now())
+}
+
+// 3. ตารางข้อมูล Router Mikrotik [cite: 418, 734]
+model Router {
+  id        String   @id @default(uuid())
+  name      String   // ชื่อสาขาหรือชื่อระบุตัวตน
+  host      String   // IP Address หรือ Hostname ของ Mikrotik [cite: 418, 734]
+  port      Int      @default(8728) // พอร์ตมาตรฐานสำหรับ API 
+  apiUser   String   // Username สำหรับเข้าใช้งาน API Mikrotik [cite: 418, 734]
+  apiPass   String   // Password สำหรับเข้าใช้งาน API Mikrotik [cite: 418, 734]
+  branch    String?  // สาขาหรือสถานที่ติดตั้ง [cite: 418]
+  isActive  Boolean  @default(true) // สำหรับเปิด-ปิดการเชื่อมต่อ [cite: 736]
+  admins    User[]   // รายชื่อ Admin ที่มีสิทธิ์ดูแล Router นี้ [cite: 734, 736]
+  logs      RouterLog[]
+}
+
+// 4. ตารางเก็บ Log การทำงาน (Audit Trail) [cite: 385, 675]
+model RouterLog {
+  id        String   @id @default(uuid())
+  action    String   // การกระทำ เช่น "Create User", "Disconnect User"
+  details   String?  // รายละเอียดเพิ่มเติม
+  status    String   // "Success" หรือ "Failed"
+  router    Router   @relation(fields: [routerId], references: [id])
+  routerId  String
+  createdAt DateTime @default(now())
+}
